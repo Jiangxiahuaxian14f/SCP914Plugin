@@ -1,0 +1,31 @@
+name: Build EXILED Plugin
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v2
+
+    - name: Restore NuGet packages
+      run: nuget restore SCP914Plugin.sln
+
+    - name: Build the plugin
+      run: msbuild SCP914Plugin.csproj /p:Configuration=Release /p:Platform=AnyCPU
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: SCP914Plugin
+        path: bin\Release\net48\*.dll
