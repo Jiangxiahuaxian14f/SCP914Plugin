@@ -12,19 +12,45 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Download EXILED 8.9.11
+      run: |
+        Invoke-WebRequest -Uri "https://github.com/Exiled-Team/EXILED/releases/download/8.9.11/Exiled.tar.gz" -OutFile "Exiled.tar.gz"
+        tar -xzf Exiled.tar.gz
+        # 下载游戏公开化DLL（Assembly-CSharp-Publicized）和UnityEngine.CoreModule
+        # 这些可以从官方API获取，或使用预置的缓存
+        # 这里用一个公开可用的镜像（示例，需要替换）
+        # 实际上可以通过安装NuGet包 `Exiled.References` 来避免手动下载这些
+      shell: pwsh
+
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore SCP914Plugin.csproj
+    - name: Install Exiled.References NuGet package
+      run: |
+        dotnet new console -n temp
+        cd temp
+        dotnet add package Exiled.References --version 8.9.11
+        cd ..
+        # 复制引用文件到项目目录
+        cp -r temp/obj/Exiled.References/*.dll ./
+      shell: pwsh
 
-    - name: Build the plugin
-      run: dotnet build SCP914Plugin.csproj -c Release --no-restore
+    - name: Build plugin
+      run: |
+        $refs = @(
+            "Exiled.API.dll",
+            "Exiled.Events.dll",
+            "Assembly-CSharp-Publicized.dll",
+            "UnityEngine.CoreModule.dll"
+        ) | ForEach-Object { "/reference:$([System.IO.Path]::GetFullPath($_))" }
+        $csc = "C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe"
+        & $csc /target:library /out:SCP914Plugin.dll $refs Scp914RoleChanger.cs
+      shell: pwsh
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: SCP914Plugin
-        path: bin/Release/net48/*.dll
+        path: SCP914Plugin.dll
