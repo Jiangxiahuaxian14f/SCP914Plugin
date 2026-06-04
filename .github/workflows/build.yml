@@ -12,20 +12,19 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v2
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
 
-    - name: Setup NuGet
-      uses: NuGet/setup-nuget@v2
-
-    - name: Restore NuGet packages
-      run: nuget restore SCP914Plugin.sln
+    - name: Restore dependencies
+      run: dotnet restore SCP914Plugin.csproj
 
     - name: Build the plugin
-      run: msbuild SCP914Plugin.csproj /p:Configuration=Release /p:Platform=AnyCPU
+      run: dotnet build SCP914Plugin.csproj -c Release --no-restore
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: SCP914Plugin
-        path: bin\Release\net48\*.dll
+        path: bin/Release/net48/*.dll
