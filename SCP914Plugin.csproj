@@ -4,18 +4,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <!-- 请根据你的服务器实际路径修改 HintPath -->
-    <Reference Include="Exiled.API">
-      <HintPath>C:\path\to\your\server\EXILED\Exiled.API.dll</HintPath>
-    </Reference>
-    <Reference Include="Exiled.Events">
-      <HintPath>C:\path\to\your\server\EXILED\Exiled.Events.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp-Publicized">
-      <HintPath>C:\path\to\your\server\Assembly-CSharp-Publicized.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>C:\path\to\your\server\SCPSL_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Exiled.Dev.References" Version="8.9.11" />
   </ItemGroup>
 </Project>
